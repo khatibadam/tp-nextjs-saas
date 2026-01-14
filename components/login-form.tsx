@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import { toast } from "sonner"
+import Link from "next/link"
 
 export function LoginForm({
   className,
@@ -24,10 +25,17 @@ export function LoginForm({
 }: React.ComponentProps<"div">) {
 
   const [email, setEmail] = useState("")
+  const [password, setPassword] = useState("")
   const [loading, setLoading] = useState(false)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+
+    if (password.length < 8) {
+      toast.error('Le mot de passe doit contenir au moins 8 caractères')
+      return
+    }
+
     setLoading(true)
 
     try {
@@ -36,19 +44,19 @@ export function LoginForm({
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ email }),
+        body: JSON.stringify({ email, password }),
       })
 
       const data = await response.json()
 
       if (response.ok) {
-        toast.success('Code envoyé à lemail')
+        toast.success('Code envoyé à votre email')
         sessionStorage.setItem('otp-email', email)
         setTimeout(() => {
           window.location.href = "/otp"
         }, 1000)
       } else {
-        toast.error(data.error || 'Erreur lors de lenvoi du code')
+        toast.error(data.error || 'Erreur lors de la connexion')
       }
     } catch (error) {
       console.error('Erreur:', error)
@@ -64,7 +72,7 @@ export function LoginForm({
         <CardHeader>
           <CardTitle>Connexion à votre compte</CardTitle>
           <CardDescription>
-            Entrez votre email pour recevoir un code de vérification
+            Entrez vos identifiants pour recevoir un code de vérification
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -77,19 +85,38 @@ export function LoginForm({
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="email@domaine.com"
+                  placeholder="email@gmail.com"
                   required
                   disabled={loading}
                 />
               </Field>
               <Field>
-                <Button 
+                <FieldLabel htmlFor="password">Mot de passe</FieldLabel>
+                <Input
+                  id="password"
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="Votre mot de passe"
+                  required
+                  disabled={loading}
+                />
+              </Field>
+              <Field>
+                <Button
                   type="submit"
                   disabled={loading}
+                  className="w-full"
                 >
-                  {loading ? 'Envoi en cours...' : 'Se connecter'}
+                  {loading ? 'Connexion...' : 'Se connecter'}
                 </Button>
               </Field>
+              <p className="text-center text-sm text-muted-foreground">
+                Vous n&apos;avez pas de compte ?{' '}
+                <Link href="/signup" className="text-primary hover:underline">
+                  Créez-en un !
+                </Link>
+              </p>
             </FieldGroup>
           </form>
         </CardContent>

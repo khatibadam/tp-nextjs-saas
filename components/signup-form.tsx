@@ -35,6 +35,12 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
     const password = formData.get("password") as string
     const confirmPassword = formData.get("confirm-password") as string
 
+    if (password.length < 8) {
+      toast.error("Le mot de passe doit contenir au moins 8 caractères")
+      setIsLoading(false)
+      return
+    }
+
     if (password !== confirmPassword) {
       toast.error("Les mots de passe ne correspondent pas")
       setIsLoading(false)
@@ -59,7 +65,7 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
       if (data.error) {
         toast.error(data.message || "Erreur lors de la création du compte")
       } else {
-        toast.success("Compte créé avec succès !")
+        toast.success("Compte crée")
         router.push("/login")
       }
     } catch (error) {
@@ -73,17 +79,17 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
   return (
     <Card {...props}>
       <CardHeader>
-        <CardTitle>Create an account</CardTitle>
+        <CardTitle>Créer un compte</CardTitle>
         <CardDescription>
-          Enter your information below to create your account
+          Entrez vos informations pour créer votre compte
         </CardDescription>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit}>
           <FieldGroup>
             <Field>
-              <FieldLabel htmlFor="name">Full Name</FieldLabel>
-              <Input id="name" name="name" type="text" placeholder="Nom complet" required />
+              <FieldLabel htmlFor="name">Nom complet</FieldLabel>
+              <Input id="name" name="name" type="text" placeholder="Prénom Nom" required />
             </Field>
             <Field>
               <FieldLabel htmlFor="email">Email</FieldLabel>
@@ -94,38 +100,31 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
                 placeholder="email@domaine.com"
                 required
               />
-              <FieldDescription>
-                We&apos;ll use this to contact you. We will not share your email
-                with anyone else.
-              </FieldDescription>
             </Field>
             <Field>
-              <FieldLabel htmlFor="password">Password</FieldLabel>
+              <FieldLabel htmlFor="password">Mot de passe</FieldLabel>
               <Input id="password" name="password" type="password" required />
               <FieldDescription>
-                Must be at least 8 characters long.
+                Minimum 8 caractère.
               </FieldDescription>
             </Field>
             <Field>
               <FieldLabel htmlFor="confirm-password">
-                Confirm Password
+                Confirmer le mot de passe
               </FieldLabel>
               <Input id="confirm-password" name="confirm-password" type="password" required />
-              <FieldDescription>Please confirm your password.</FieldDescription>
             </Field>
-            <FieldGroup>
-              <Field>
-                <Button type="submit" disabled={isLoading}>
-                  {isLoading ? "Création..." : "Create Account"}
-                </Button>
-                <Button variant="outline" type="button">
-                  Sign up with Google
-                </Button>
-                <FieldDescription className="px-6 text-center">
-                  Already have an account? <a href="/login">Sign in</a>
-                </FieldDescription>
-              </Field>
-            </FieldGroup>
+            <Field>
+              <Button type="submit" disabled={isLoading} className="w-full">
+                {isLoading ? "Création..." : "Créer mon compte"}
+              </Button>
+              <p className="text-center text-sm text-muted-foreground mt-4">
+                Déjà un compte ?{' '}
+                <a href="/login" className="text-primary hover:underline">
+                  Connectez-vous !
+                </a>
+              </p>
+            </Field>
           </FieldGroup>
         </form>
       </CardContent>

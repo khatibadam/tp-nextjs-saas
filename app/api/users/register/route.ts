@@ -13,6 +13,13 @@ export async function POST(req: Request) {
     }
 
     try{
+        const existingUser = await prisma.user.findUnique({
+            where: { email }
+        })
+
+        if (existingUser) {
+            return Response.json({ error: true, message: 'Email déjà utilisé', code: 'E03' })
+        }
 
         const ps : string | undefined = await ArgonHash(password)
 

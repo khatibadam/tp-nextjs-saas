@@ -1,4 +1,5 @@
 import "./globals.css";
+import { Toaster } from "sonner";
 
 export default function RootLayout({
   children,
@@ -7,9 +8,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="fr">
-      <body
-      >
+      <body>
         {children}
+        <Toaster position="top-center" richColors />
       </body>
     </html>
   );

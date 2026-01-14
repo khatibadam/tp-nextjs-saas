@@ -27,6 +27,7 @@ export function OTPForm({ ...props }: React.ComponentProps<typeof Card>) {
   const [loading, setLoading] = useState(false)
   const [resending, setResending] = useState(false)
   const [email, setEmail] = useState("")
+  const [countdown, setCountdown] = useState(0)
 
   useEffect(() => {
     const storedEmail = sessionStorage.getItem('otp-email')
@@ -39,6 +40,13 @@ export function OTPForm({ ...props }: React.ComponentProps<typeof Card>) {
       }, 2000)
     }
   }, [])
+
+  useEffect(() => {
+    if (countdown > 0) {
+      const timer = setTimeout(() => setCountdown(countdown - 1), 1000)
+      return () => clearTimeout(timer)
+    }
+  }, [countdown])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -64,6 +72,7 @@ export function OTPForm({ ...props }: React.ComponentProps<typeof Card>) {
       if (response.ok) {
         toast.success('Code vérifié avec succès')
         sessionStorage.removeItem('otp-email')
+        sessionStorage.setItem('user', JSON.stringify(data.user))
         setTimeout(() => {
           window.location.href = "/dashboard"
         }, 1000)
@@ -97,6 +106,7 @@ export function OTPForm({ ...props }: React.ComponentProps<typeof Card>) {
       if (response.ok) {
         toast.success('Un nouveau code a été envoyé')
         setCode("")
+        setCountdown(60)
       } else {
         toast.error(data.error || 'Erreur lors du renvoi du code')
       }
@@ -149,13 +159,13 @@ export function OTPForm({ ...props }: React.ComponentProps<typeof Card>) {
               </Button>
               <FieldDescription className="text-center">
                 Vous n&apos;avez pas reçu le code ?{' '}
-                <button 
+                <button
                   onClick={handleResend}
-                  disabled={resending}
+                  disabled={resending || countdown > 0}
                   className="text-primary hover:underline disabled:opacity-50"
                   type="button"
                 >
-                  {resending ? 'Envoi...' : 'Renvoyer'}
+                  {resending ? 'Envoi...' : countdown > 0 ? `Renvoyer (${countdown}s)` : 'Renvoyer'}
                 </button>
               </FieldDescription>
             </FieldGroup>

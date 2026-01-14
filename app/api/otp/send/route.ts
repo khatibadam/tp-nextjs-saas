@@ -1,14 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { sendOTPEmail } from '@/lib/email';
+import { ArgonVerify } from '@/lib/argon2i';
 
 export async function POST(request: NextRequest) {
   try {
-    const { email } = await request.json();
+    const { email, password } = await request.json();
 
-    if (!email) {
+    if (!email || !password) {
       return NextResponse.json(
-        { error: 'Email requis' },
+        { error: 'Email et mot de passe requis' },
         { status: 400 }
       );
     }
@@ -19,8 +20,17 @@ export async function POST(request: NextRequest) {
 
     if (!user) {
       return NextResponse.json(
-        { error: 'Utilisateur non trouvé' },
+        { error: 'Compte inexistant' },
         { status: 404 }
+      );
+    }
+
+    const isPasswordValid = await ArgonVerify(user.password, password);
+
+    if (!isPasswordValid) {
+      return NextResponse.json(
+        { error: 'Mot de passe incorrect' },
+        { status: 401 }
       );
     }
 

@@ -1,3 +1,7 @@
+"use client"
+
+import { useEffect } from "react"
+import { useRouter } from "next/navigation"
 import { AppSidebar } from "@/components/app-sidebar"
 import {
   Breadcrumb,
@@ -13,8 +17,25 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar"
+import { useAuth } from "@/hooks/use-auth"
 
 export default function Page() {
+  const { user, isReady } = useAuth()
+  const router = useRouter()
+
+  useEffect(() => {
+    if (isReady && !user) {
+      router.push("/login")
+    }
+  }, [isReady, user, router])
+
+  if (!isReady || !user) {
+    return (
+      <div className="flex min-h-svh items-center justify-center">
+        <p>Chargement...</p>
+      </div>
+    )
+  }
   return (
     <SidebarProvider>
       <AppSidebar />
