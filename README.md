@@ -30,11 +30,18 @@ EMAIL_FROM=votre-email@gmail.com
 EMAIL_FROM_NAME=Nom de votre application
 ```
 
+## Docs Utile
+
+- Pour Test carte Stripe : https://docs.stripe.com/testing
+
+
 ## 🚀 Installation rapide
 
 ```bash
 # Installer les dépendances
 npm install
+npm i stripe 
+npm i nodemailer
 
 # Configurer les variables d'environnement
 # Faite une copie du fichier '.env.exemple', renommer-le '.env' et modifier les variables qu'elle contient
